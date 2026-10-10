@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPi SDK Console</title>
+<link rel="stylesheet" href="{{CSS_URI}}">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">
+    <span class="logo">◧</span>
+    <div class="brand-text">
+      <span class="brand-title">QPi SDK Console <span class="ver">v{{VERSION}}</span></span>
+      <span class="brand-sub" data-i18n="panel.brandSub">Quectel QPi Development Toolkit</span>
+    </div>
+    <span id="backendBadge" class="badge badge-off" data-i18n="panel.backendOff">后端: 未连接</span>
+    <span id="connBadge" class="badge badge-off" data-i18n="panel.connOff">未连接 SDK</span>
+    <span id="devBadge" class="badge badge-off" data-i18n="panel.noDevice">无设备</span>
+  </div>
+  <div class="topbar-actions">
+    <button id="btnRefreshDevices" class="btn btn-sm" data-i18n="panel.refreshDev" data-i18n-title="panel.refreshDevTip">刷新设备</button>
+    <button id="btnBackendInfo" class="btn btn-sm" data-i18n="panel.scanDevInfo" data-i18n-title="panel.scanDevInfoTip">扫描设备信息</button>
+  </div>
+</header>
+
+<!-- ==================== 连接配置 (顶部) ==================== -->
+<section id="connSection" class="card">
+  <div class="card-title"><span data-i18n="panel.connConfig">连接配置</span> <span class="hint" data-i18n="panel.connConfigHint">(本机 SDK 或 SSH 编译机)</span></div>
+  <div class="row">
+    <label class="radio"><input type="radio" name="mode" value="local" checked> <span data-i18n="panel.modeLocal">本机 SDK</span></label>
+    <label class="radio"><input type="radio" name="mode" value="ssh"> <span data-i18n="panel.modeSsh">SSH 编译机</span></label>
+    <input type="text" id="inSdkRoot" data-i18n-ph="panel.sdkRootPh" placeholder="SDK 根目录 (包含 build.sh 的目录, 如 /home/user/ai_sdk)" class="grow">
+    <button id="btnBrowseSdk" class="btn" data-i18n="panel.browse" data-i18n-title="panel.browseSdkTip">浏览</button>
+  </div>
+  <div id="sshFields" class="row hidden">
+    <input type="text" id="inHost" data-i18n-ph="panel.hostPh" placeholder="主机" class="w-12">
+    <input type="text" id="inPort" placeholder="22" value="22" class="w-8">
+    <input type="text" id="inUser" data-i18n-ph="panel.userPh" placeholder="用户名" class="w-12">
+    <input type="password" id="inPass" data-i18n-ph="panel.passPh" placeholder="密码(可选)" class="w-16">
+    <input type="text" id="inKeyPath" data-i18n-ph="panel.keyPh" placeholder="私钥路径(可选)" class="grow">
+  </div>
+  <div class="row">
+    <input type="text" id="inProjectDir" data-i18n-ph="panel.projectDirPh" data-i18n-title="panel.projectDirTip" placeholder="工程创建目录" value="projects" class="w-16">
+    <button id="btnConnect" class="btn btn-primary" data-i18n="btn.connect">连接</button>
+    <button id="btnDisconnect" class="btn btn-danger hidden" data-i18n="tile.disconnect">断开</button>
+  </div>
+  <div id="probeInfo" class="probe hidden"></div>
+</section>
+
+<nav id="tabs">
+  <button class="tab active" data-tab="build" data-i18n="panel.tabBuild">编译</button>
+  <button class="tab" data-tab="flash" data-i18n="panel.tabFlash">烧录</button>
+  <button class="tab" data-tab="device-tree" data-i18n="panel.tabDeviceTree">设备树</button>
+  <button class="tab" data-tab="project" data-i18n="panel.tabProject">工程创建</button>
+  <button class="tab" data-tab="device" data-i18n="panel.tabDevice">设备</button>
+  <button class="tab" data-tab="at" data-i18n="panel.tabAt">AT 指令</button>
+  <button class="tab" data-tab="audio" data-i18n="panel.tabAudio">音频</button>
+  <button class="tab" data-tab="tools" data-i18n="panel.tabTools">工具</button>
+  <button class="tab" data-tab="skills" data-i18n="panel.tabSkills">SKILL 文档</button>
+  <button class="tab" data-tab="repo" data-i18n="panel.tabRepo">环境引导</button>
+</nav>
+
+<main id="content">
+  <!-- ==================== 编译 ==================== -->
+  <section class="tabpage active" id="tab-build">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.appBuild">应用编译</div>
+      <div class="row">
+        <select id="selAppDir" class="grow"></select>
+        <button id="btnRefreshApps" class="btn btn-sm" data-i18n="panel.refresh" data-i18n-title="panel.refreshDirTip">刷新</button>
+        <button class="btn btn-primary" data-task='{"method":"build","args":["app","__SEL__"]}' id="btnBuildApp" data-i18n="panel.buildAppBtn">编译应用</button>
+      </div>
+      <div class="hint" id="appDirHint" data-i18n="panel.appDirHint">选择应用目录 (projects/ 或 docs/examples/ 下)</div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="panel.kernelFwBuild">内核 / 固件编译</div>
+      <div class="row">
+        <button class="btn btn-danger" data-task='{"method":"build","args":["all"]}' data-i18n="panel.buildAllBtn" data-i18n-title="panel.buildAllTip">全量编译</button>
+        <button class="btn btn-primary" data-task='{"method":"build","args":["boot"]}' data-i18n="panel.buildBootBtn" data-i18n-title="panel.buildBootTip">编译 Boot 镜像</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-warn" data-task='{"method":"build","args":["check"]}' data-i18n="panel.buildCheckBtn" data-i18n-title="panel.buildCheckTip">环境自检</button>
+        <button class="btn btn-warn" data-task='{"method":"build","args":["clean"]}' data-i18n="panel.buildCleanBtn" data-i18n-title="panel.buildCleanTip">清理产物</button>
+        <span class="hint" data-i18n="panel.menuconfigHint">内核配置 menuconfig 请在 VS Code 终端执行: cd SDK根目录 && ./build.sh menuconfig</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 设备树 ==================== -->
+  <section class="tabpage" id="tab-device-tree">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.dtPeripherals">RK3576 PI M2 外设节点</div>
+      <div class="row">
+        <button class="btn btn-primary" id="btnRefreshDeviceTree" data-i18n="panel.dtRefresh">刷新节点</button>
+        <select id="selDeviceTreeSource" class="grow"></select>
+        <span class="hint" id="deviceTreePath" data-i18n="panel.dtPathHint">请先连接 SDK 后读取板级设备树</span>
+      </div>
+      <div class="hint" data-i18n-html="panel.dtIntro">默认展示最终 DTB 中已自动定位到板级 DTS/DTSI 源码的可编辑外设。无法定位源码的内核公共节点不显示。可切换节点 <span class="mono">status</span> 或编辑顶层属性；每次保存都会生成同目录 <span class="mono">.bak</span>。</div>
+      <div class="row"><input id="inDeviceTreeFilter" class="grow mono" data-i18n-ph="panel.dtFilterPh" placeholder="筛选节点路径、名称或属性，例如 hdmi、i2c、status"></div>
+      <div id="deviceTreeList" class="device-tree-list"></div>
+      <div id="deviceTreeEditor" class="device-tree-editor hidden">
+        <div class="card-title" id="deviceTreeEditorTitle" data-i18n="panel.dtEditorTitle">编辑节点属性</div>
+        <textarea id="deviceTreeProperties" class="grow mono" rows="7" data-i18n-ph="panel.dtPropsPh" placeholder="每行一个属性，例如：&#10;pinctrl-0 = <&amp;i2c3m0_xfer>;&#10;clock-frequency = <400000>;"></textarea>
+        <div class="row"><button class="btn btn-primary" id="btnSaveDeviceTreeProperties" data-i18n="panel.dtSaveProps">保存节点属性</button><button class="btn" id="btnCancelDeviceTreeProperties" data-i18n="btn.cancel">取消</button><span class="hint" data-i18n="panel.dtEditorHint">仅接受顶层属性声明；不支持花括号、子节点和删除指令。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 烧录 ==================== -->
+  <section class="tabpage" id="tab-flash">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.boardStatus">板子连接状态</div>
+      <div id="adbList" class="adb-list"></div>
+      <div class="row">
+        <button class="btn btn-sm" id="btnRebootLoader" data-i18n="panel.rebootLoader" data-i18n-title="panel.rebootLoaderTip">重启到 Loader</button>
+        <button class="btn btn-sm" data-task='{"method":"reboot","args":[false]}' data-i18n="panel.rebootDevice" data-i18n-title="panel.rebootDeviceTip">重启设备</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="panel.appDeploy">应用部署</div>
+      <div class="row">
+        <select id="selDeployProject" class="w-24" data-i18n-title="panel.deployProjTip"></select>
+        <input type="text" id="inDeploySource" class="grow mono" data-i18n-ph="panel.deploySrcPh" placeholder="本地或 SDK/远程上的源文件/文件夹路径">
+        <select id="selDeployKind" class="w-12" data-i18n-title="panel.deployKindTip">
+          <option value="auto" data-i18n="panel.deployKindAuto">自动识别</option>
+          <option value="file" data-i18n="panel.deployKindFile">文件</option>
+          <option value="directory" data-i18n="panel.deployKindDir">整个文件夹</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="text" id="inDeployTarget" class="grow mono" value="/data/local/tmp/" data-i18n-ph="panel.deployTargetPh" placeholder="设备目标路径，如 /opt/apps/hello">
+        <input type="text" id="inDeployRunCmd" class="grow mono" data-i18n-ph="panel.deployRunCmdPh" placeholder="推送后执行命令（可选；文件默认执行目标文件）">
+        <button class="btn btn-primary" id="btnDeployRun" data-i18n="panel.deployRun">推送并运行</button>
+        <button class="btn" id="btnDeployPush" data-i18n="panel.deployPush">仅推送</button>
+      </div>
+      <div class="hint" data-i18n="panel.deployHint">可推送文件或整个目录。源路径可填写 SDK 相对路径或绝对路径；目标路径为设备端 adb push 目标。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="panel.fwFlash">固件烧录</div>
+      <div id="flashTools" class="tool-list"></div>
+      <div class="row">
+        <input type="text" id="inFlashImage" value="build/result/update.img" class="grow mono" data-i18n-title="panel.flashImgTip">
+        <select id="selFlashTool" class="w-24"></select>
+        <button class="btn btn-danger" id="btnFlash" data-i18n="panel.flashBtn">🔥 全量烧录</button>
+      </div>
+      <div class="row" id="rowPartitionFlash">
+        <input type="text" id="inPartitionImage" class="grow mono" data-i18n-ph="panel.bootImgPh" data-i18n-title="panel.bootImgTip" placeholder="Boot 镜像路径（可选；留空使用 build/result/boot.img）">
+        <button class="btn btn-primary flash-partition" data-partition="boot" data-i18n="panel.flashBootBtn" data-i18n-title="panel.flashBootTip">烧录 Boot 镜像</button>
+      </div>
+      <div class="flash-progress hidden" id="flashProgress">
+        <div class="fp-bar"><div class="fp-fill" id="flashProgressFill" style="width:0%"></div></div>
+        <span class="fp-text" id="flashProgressText" data-i18n="panel.flashNotStarted">未开始烧录</span>
+      </div>
+      <div class="hint" id="flashHint" data-i18n="panel.flashHint">烧录会尝试对在线 ADB 设备执行 reboot loader，并等待 Rockchip USB 枚举。若日志显示未找到 rockusb 设备，请使用板子的 Loader/Maskrom 按键进入下载模式后重试。</div>
+    </div>
+  </section>
+
+  <!-- ==================== 工程创建 ==================== -->
+  <section class="tabpage" id="tab-project">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.selectTemplate">选择模板</div>
+      <div class="row" id="tplFilter"></div>
+      <div id="templateGrid" class="tpl-grid"></div>
+    </div>
+    <div class="card hidden" id="createFormPanel">
+      <div class="card-title" id="createFormTitle" data-i18n="panel.createFormTitle">工程参数</div>
+      <div id="createForm"></div>
+      <div class="row">
+        <button class="btn btn-primary" id="btnCreateProject" data-i18n="panel.createProjectBtn">🚀 创建工程</button>
+        <span id="createResult" class="hint"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span data-i18n="panel.myProjects">我的工程 </span><button id="btnRefreshProjects" class="btn btn-sm" data-i18n="panel.refresh">刷新</button></div>
+      <div id="projectList" class="project-list"></div>
+    </div>
+  </section>
+
+  <!-- ==================== 设备 ==================== -->
+  <section class="tabpage" id="tab-device">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.deviceDebug">设备调试 (adb)</div>
+      <div class="row">
+        <input type="text" id="inDmesgFilter" data-i18n-ph="panel.dmesgFilterPh" placeholder="dmesg 过滤词 (留空=全部)" class="grow">
+        <button id="btnDmesg" class="btn">dmesg</button>
+        <button id="btnDmesgFollow" class="btn" data-i18n="panel.dmesgFollow">dmesg -w 实时</button>
+      </div>
+      <div class="row">
+        <input type="text" id="inJctlFilter" data-i18n-ph="panel.jctlFilterPh" placeholder="journalctl 过滤词" class="grow">
+        <button id="btnJctl" class="btn">journalctl</button>
+        <button id="btnJctlFollow" class="btn">journalctl -f</button>
+      </div>
+      <div class="row">
+        <input type="text" id="inAdbCmd" data-i18n-ph="panel.adbCmdPh" placeholder="设备命令, 如 ls /data 或 cat /proc/version (自动加 adb shell)" class="grow">
+        <button id="btnAdb" class="btn btn-primary" data-i18n="panel.execBtn">执行</button>
+      </div>
+      <div class="hint" data-i18n="panel.deviceHint">默认在设备 shell 中执行: 直接输入 ls 即可 (等价于 adb shell ls)。需要 adb 原生子命令 (如 devices / push / pull / reboot / logcat) 时照常输入。</div>
+      <div class="row">
+        <span id="devOutput" class="hint mono"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== AT ==================== -->
+  <section class="tabpage" id="tab-at">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.atTitle">AT 指令 (串口 / adb 端侧设备)</div>
+      <div class="row">
+        <select id="selAtPort" class="w-32">
+          <option value="/dev/ttyACM0">/dev/ttyACM0</option>
+          <option value="/dev/ttyACM1">/dev/ttyACM1</option>
+          <option value="/dev/ttyUSB0">/dev/ttyUSB0</option>
+          <option value="/dev/ttyUSB1">/dev/ttyUSB1</option>
+        </select>
+        <input type="number" id="inAtBaud" value="115200" class="w-24" data-i18n-title="panel.atBaudTip" min="300" max="4000000">
+        <button id="btnRefreshPorts" class="btn" data-i18n="panel.atRefreshPorts" data-i18n-title="panel.atRefreshPortsTip">刷新串口</button>
+        <button id="btnAtSend" class="btn btn-primary" data-i18n="panel.atSend">发送</button>
+      </div>
+      <div class="hint" id="atPortHint" data-i18n="panel.atPortHint">本机串口直接发送; 端侧设备串口通过 adb 发送 (波特率取上方输入框)</div>
+      <div class="row">
+        <textarea id="inAtCmds" rows="4" class="grow mono" data-i18n-ph="panel.atCmdsPh" placeholder="每行一条指令, 如:&#10;AT&#10;ATI&#10;AT+QGMR"></textarea>
+      </div>
+      <div class="card-title" data-i18n="panel.atCommon">常用指令</div>
+      <div class="chips">
+        <button class="chip" data-at="AT">AT</button>
+        <button class="chip" data-at="ATI">ATI</button>
+        <button class="chip" data-at="AT+CPIN?">AT+CPIN?</button>
+        <button class="chip" data-at="AT+CSQ">AT+CSQ</button>
+        <button class="chip" data-at="AT+CREG?">AT+CREG?</button>
+        <button class="chip" data-at="AT+QMAC?">AT+QMAC?</button>
+        <button class="chip" data-at="AT+QGMR">AT+QGMR</button>
+        <button class="chip" data-at="AT+QAPSUB">AT+QAPSUB</button>
+        <button class="chip" data-at="AT+EGMR=0,5">AT+EGMR=0,5 (SN)</button>
+        <button class="chip" data-at="AT+ICCID">AT+ICCID</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 音频 ==================== -->
+  <section class="tabpage" id="tab-audio">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.audioDebug">音频调试</div>
+      <div class="row">
+        <button id="btnAudioCollect" class="btn btn-primary" data-i18n="panel.audioCollect" data-i18n-title="panel.audioCollectTip">抓音频日志</button>
+      </div>
+      <div class="card-title" data-i18n="panel.playTest">播放测试</div>
+      <div class="row">
+        <button class="btn btn-primary" data-task='{"method":"aplay","args":["/tmp/test.wav"]}' data-i18n="panel.aplayBtn">音频播放</button>
+        <button id="btnTinymixSpeaker" class="btn" data-i18n="panel.speakerCfg">配置 Speaker 通路</button>
+        <input type="text" id="inTinymixArgs" data-i18n-ph="panel.tinymixArgsPh" placeholder="tinymix 参数, 如 get 0" class="grow">
+        <button id="btnTinymix" class="btn" data-i18n="panel.tinymixBtn">tinymix</button>
+      </div>
+      <div class="hint" data-i18n="panel.audioHint">⚠️ 播放前需停 PipeWire: systemctl stop gdm; killall -9 pipewire pipewire-pulse wireplumber</div>
+    </div>
+  </section>
+
+  <!-- ==================== 工具 ==================== -->
+  <section class="tabpage" id="tab-tools">
+    <div class="card">
+      <div class="card-title" data-i18n="panel.scrDispGpu">截图 / 显示 / 性能</div>
+      <div class="row">
+        <button class="btn" data-task='{"method":"screenshot"}' data-i18n="panel.screenshot">截图</button>
+        <button class="btn" data-task='{"method":"screenRecord","args":["10"]}' data-i18n="panel.screenRecordBtn">录屏</button>
+        <button class="btn" data-task='{"method":"playVideo","args":["/tmp/test.mp4"]}' data-i18n="panel.videoPlayBtn">视频播放</button>
+        <button class="btn" id="btnPerfMonitor" data-i18n="panel.perfMonitor">性能监控</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="panel.rawCmd">任意命令</div>
+      <div class="row">
+        <input type="text" id="inRawCmd" data-i18n-ph="panel.rawCmdPh" placeholder="在 SDK 根目录执行 shell 命令" class="grow">
+        <button id="btnRawExec" class="btn" data-i18n="panel.execBtn">执行</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SKILL ==================== -->
+  <section class="tabpage" id="tab-skills">
+    <div class="card">
+      <div class="card-title"><span data-i18n="panel.skillsTitle">SKILL 文档 </span><button id="btnReloadSkills" class="btn btn-sm" data-i18n="panel.refresh">刷新</button></div>
+      <div id="skillsList" class="skills-list"></div>
+      <pre id="skillContent" class="skill-content hidden"></pre>
+    </div>
+  </section>
+
+  <!-- ==================== 环境引导 (仓库克隆) ==================== -->
+  <section class="tabpage" id="tab-repo">
+    <div class="card">
+      <div class="card-title"><span data-i18n="panel.repoTitle">环境引导 </span><span class="hint" data-i18n="panel.repoTitleHint">首次使用 / 组件缺失时, 从这里克隆仓库</span></div>
+      <div id="repoIntro" class="hint" data-i18n="panel.repoIntro">
+        本插件需要完整的 SDK 组件才能编译。若下方有组件缺失, 请为每个缺失组件配置
+        git 仓库地址 (或本地路径), 然后点击「克隆」。克隆完成后点击「重新检测」。
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnRepoRescan" class="btn btn-primary" data-i18n="panel.repoRescan">重新检测</button>
+        <button id="btnSaveRepos" class="btn" data-i18n="panel.repoSave">保存仓库地址</button>
+        <span class="hint" data-i18n="panel.repoSaveHint">地址保存在本机设置中, 下次自动带出</span>
+      </div>
+      <div id="repoList" class="repo-list"></div>
+    </div>
+    <div class="card hidden" id="cloneCorePanel">
+      <div class="card-title" data-i18n="panel.cloneCoreTitle">克隆核心 SDK</div>
+      <div class="hint" data-i18n="panel.cloneCoreHint">当 sdk_root 为空 / 不存在时, 先克隆核心 SDK (包含 build.sh + tools + docs 等)</div>
+      <div class="row">
+        <input type="text" id="inCoreUrl" data-i18n-ph="panel.coreUrlPh" placeholder="核心 SDK git 仓库地址" class="grow">
+        <input type="text" id="inCoreDir" data-i18n-ph="panel.coreDirPh" placeholder="克隆目标目录 (绝对路径)" class="grow">
+        <button id="btnCloneCore" class="btn btn-primary" data-i18n="panel.cloneCoreBtn">克隆核心 SDK</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="outputResizer" class="output-resizer" data-i18n-title="panel.outputResizerTip"></div>
+<section id="outputSection">
+  <div class="output-tabs" id="outputTabs">
+    <button id="btnNewLog" class="btn btn-sm" data-i18n="panel.newLog" data-i18n-title="panel.newLogTip">➕ 新增窗口</button>
+    <button id="btnStopTask" class="btn btn-sm out-stop hidden" data-i18n="panel.stop" data-i18n-title="panel.stopTip">⏹ 停止</button>
+    <button id="btnToggleOutput" class="btn btn-sm out-toggle" data-i18n="panel.collapse" data-i18n-title="panel.collapseTip">▼ 收起</button>
+  </div>
+  <div id="outputPanels"></div>
+</section>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+  window.QPI_I18N = {{I18N_JSON}};
+</script>
+<script src="{{JS_URI}}"></script>
+</body>
+</html>

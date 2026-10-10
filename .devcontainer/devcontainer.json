@@ -1,0 +1,35 @@
+{
+  "name": "quecpi-vscode-dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "USERNAME": "developer"
+    }
+  },
+  "remoteUser": "developer",
+  "updateRemoteUserUID": true,
+  "mounts": [
+    "source=${localWorkspaceFolder}/..,target=/workspaces/Source_Code,type=bind"
+  ],
+  "forwardPorts": [8765],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/python/.venv/bin/python",
+        "js/ts.tsdk.path": "${containerWorkspaceFolder}/node_modules/typescript/lib",
+        "files.eol": "\n"
+      }
+    }
+  },
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}/python"
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh"
+}

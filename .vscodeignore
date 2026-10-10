@@ -1,0 +1,23 @@
+.vscode/**
+node_modules/**
+.git/**
+.gitignore
+test/**
+# UI 设计源图 (品牌 logo 设计包), 不随插件分发
+Q logo/**
+*.vsix
+build-install.sh
+build-install.bat
+**/__pycache__/**
+**/*.pyc
+# Windows/WSL 下载来源标记文件 (如 xxx:Zone.Identifier), 不应随插件分发
+**:Zone.Identifier
+*:Zone.Identifier
+python/.venv/**
+**/*.map
+**/*.ts
+**/.cache/**
+tools/**
+!tools/windows/adb/**
+!src/webview/panel.html
+!src/webview/panel.js

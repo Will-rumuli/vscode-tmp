@@ -1,0 +1,378 @@
+{
+  "name": "quectelpi",
+  "displayName": "Quectel Pi",
+  "description": "Quectel Pi: develop for the Quectel Pi series (M2 / H1) inside VS Code — connection (local/SSH), build, flash, project management, device tools, AT commands, audio, skill docs and environment bootstrap.",
+  "version": "1.1.1",
+  "publisher": "Quectel",
+  "license": "Apache-2.0",
+  "icon": "resources/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Debuggers"
+  ],
+  "keywords": [
+    "quectel",
+    "m2",
+    "rk3576",
+    "sdk",
+    "embedded",
+    "linux",
+    "compile",
+    "flash",
+    "ssh"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "qpiSdk",
+          "title": "%container.title%",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "qpiSdk": [
+        {
+          "id": "qpiSdk.cards",
+          "name": "%view.cards.name%",
+          "type": "webview",
+          "icon": "resources/icon.svg",
+          "contextualTitle": "%view.cards.ctxTitle%"
+        },
+        {
+          "id": "qpiSdk.welcome",
+          "name": "%view.welcome.name%",
+          "icon": "$(home)"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "qpiSdk.restartBackend",
+        "title": "%command.restartBackend%",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.toggleLanguage",
+        "title": "%command.toggleLanguage%",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.connect",
+        "title": "%command.connect%",
+        "icon": "$(plug)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.disconnect",
+        "title": "%command.disconnect%",
+        "icon": "$(debug-disconnect)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.refreshDevices",
+        "title": "%command.refreshDevices%",
+        "icon": "$(refresh)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildApp",
+        "title": "%command.buildApp%",
+        "icon": "$(tools)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildAll",
+        "title": "%command.buildAll%",
+        "icon": "$(package)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildBoot",
+        "title": "%command.buildBoot%",
+        "icon": "$(file-binary)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildKernel",
+        "title": "%command.buildKernel%",
+        "icon": "$(circuit-board)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildCheck",
+        "title": "%command.buildCheck%",
+        "icon": "$(checklist)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.setupBuildEnv",
+        "title": "%command.setupBuildEnv%",
+        "icon": "$(wrench)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.buildClean",
+        "title": "%command.buildClean%",
+        "icon": "$(trash)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.rebootLoader",
+        "title": "%command.rebootLoader%",
+        "icon": "$(symbol-event)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.flash",
+        "title": "%command.flash%",
+        "icon": "$(zap)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.flashBoot",
+        "title": "%command.flashBoot%",
+        "icon": "$(rocket)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.deployYoctoKernel",
+        "title": "%command.deployYoctoKernel%",
+        "icon": "$(desktop-download)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.deploy",
+        "title": "%command.deploy%",
+        "icon": "$(cloud-upload)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.deviceInfo",
+        "title": "%command.deviceInfo%",
+        "icon": "$(device-mobile)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.adb",
+        "title": "%command.adb%",
+        "icon": "$(terminal)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.dmesg",
+        "title": "%command.dmesg%",
+        "icon": "$(list-tree)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.journalctl",
+        "title": "%command.journalctl%",
+        "icon": "$(list-flat)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.reboot",
+        "title": "%command.reboot%",
+        "icon": "$(debug-restart)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.at",
+        "title": "%command.at%",
+        "icon": "$(send)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.audioCollect",
+        "title": "%command.audioCollect%",
+        "icon": "$(mic)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.tinymix",
+        "title": "%command.tinymix%",
+        "icon": "$(settings)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.screenRecord",
+        "title": "%command.screenRecord%",
+        "icon": "$(device-camera-video)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.screenshot",
+        "title": "%command.screenshot%",
+        "icon": "$(camera)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.aplay",
+        "title": "%command.aplay%",
+        "icon": "$(unmute)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.videoPlay",
+        "title": "%command.videoPlay%",
+        "icon": "$(play-circle)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.perfMonitor",
+        "title": "%command.perfMonitor%",
+        "icon": "$(graph-line)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.exec",
+        "title": "%command.exec%",
+        "icon": "$(terminal-bash)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.skills",
+        "title": "%command.skills%",
+        "icon": "$(book)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.createProject",
+        "title": "%command.createProject%",
+        "icon": "$(add)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.projects",
+        "title": "%command.projects%",
+        "icon": "$(folder)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.repo",
+        "title": "%command.repo%",
+        "icon": "$(repo)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.backendInfo",
+        "title": "%command.backendInfo%",
+        "icon": "$(info)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.sdkInfo",
+        "title": "%command.sdkInfo%",
+        "icon": "$(git-commit)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.aiAssistant",
+        "title": "%command.aiAssistant%",
+        "icon": "$(copilot)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.oaiConfig",
+        "title": "%command.oaiConfig%",
+        "icon": "$(key)",
+        "category": "QPi SDK"
+      },
+      {
+        "command": "qpiSdk.configureDownload",
+        "title": "%command.configureDownload%",
+        "icon": "$(globe)",
+        "category": "QPi SDK"
+      }
+    ],
+    "configuration": {
+      "title": "%config.title%",
+      "properties": {
+        "qpiSdk.backend.python": {
+          "type": "string",
+          "default": "",
+          "description": "%config.backend.python%"
+        },
+        "qpiSdk.backend.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.backend.autoStart%"
+        },
+        "qpiSdk.backend.mode": {
+          "type": "string",
+          "enum": [
+            "local",
+            "remote"
+          ],
+          "default": "local",
+          "description": "%config.backend.mode%"
+        },
+        "qpiSdk.backend.remoteUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8765",
+          "description": "%config.backend.remoteUrl%"
+        },
+        "qpiSdk.backend.remoteKey": {
+          "type": "string",
+          "default": "",
+          "description": "%config.backend.remoteKey%"
+        },
+        "qpiSdk.backend.pythonMirror": {
+          "type": "string",
+          "default": "",
+          "description": "%config.backend.pythonMirror%"
+        },
+        "qpiSdk.backend.pipMirror": {
+          "type": "string",
+          "default": "",
+          "description": "%config.backend.pipMirror%"
+        },
+        "qpiSdk.download.proxy": {
+          "type": "string",
+          "default": "",
+          "description": "%config.download.proxy%"
+        },
+        "qpiSdk.download.mirror": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "cn",
+            "global",
+            "off"
+          ],
+          "enumDescriptions": [
+            "%config.download.mirror.auto%",
+            "%config.download.mirror.cn%",
+            "%config.download.mirror.global%",
+            "%config.download.mirror.off%"
+          ],
+          "default": "auto",
+          "description": "%config.download.mirror%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "package": "vsce package --no-dependencies --allow-missing-repository --skip-license --no-rewrite-relative-links",
+    "lint": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.4.0"
+  }
+}

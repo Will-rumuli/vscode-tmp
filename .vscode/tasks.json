@@ -1,0 +1,91 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build and package QPI SDK extension",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"package"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Package QPI SDK extension without prompt",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"package"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Package QPI SDK extension",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"package"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Package QPI SDK VSIX",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"package"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Replace installed QPI SDK extension",
+			"type": "shell",
+			"command": "code",
+			"args": [
+				"--install-extension",
+				"C:\\Users\\kyson.wang\\Desktop\\qpi_sdk\\qpi-sdk-vscode-0.3.5.vsix",
+				"--force"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Package fixed QPI SDK extension",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"package"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Install QPI SDK 0.3.7 extension",
+			"type": "shell",
+			"command": "code",
+			"args": [
+				"--install-extension",
+				"C:\\Users\\kyson.wang\\Desktop\\qpi_sdk\\qpi-sdk-vscode-0.3.7.vsix",
+				"--force"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

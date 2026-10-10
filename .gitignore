@@ -1,0 +1,17 @@
+node_modules/
+out/
+build/
+*.vsix
+.DS_Store
+
+# Python 虚拟环境与字节码缓存
+python/.venv/
+**/__pycache__/
+**/*.pyc
+
+# 工具解压缓存
+**/.cache/
+
+# 恢复/临时产物
+sdk_ops_recovered.py
+*.tmp
